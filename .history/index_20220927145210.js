@@ -32,11 +32,7 @@ async function run() {
       const cursor = productCollection.find({});
       // const products = await cursor.limit(10).toArray();
       const products = await cursor.toArray();
-      const count = await cursor.count();
-      res.send({
-        count,
-        products
-      });
+      res.send(products);
     });
 
   } finally {

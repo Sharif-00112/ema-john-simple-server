@@ -24,20 +24,8 @@ async function run() {
   try {
     await client.connect();
     // console.log('Database Connected');
-    const database = client.db("ema_JohnDB");
-    const productCollection = database.collection("products");
-
-    //GET Products API
-    app.get('/products', async(req, res) =>{
-      const cursor = productCollection.find({});
-      // const products = await cursor.limit(10).toArray();
-      const products = await cursor.toArray();
-      const count = await cursor.count();
-      res.send({
-        count,
-        products
-      });
-    });
+    const database = client.db("emaJohnDB");
+    const productsCollection = database.collection("products");
 
   } finally {
     // await client.close();

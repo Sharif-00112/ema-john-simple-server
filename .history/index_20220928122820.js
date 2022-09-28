@@ -26,7 +26,6 @@ async function run() {
     // console.log('Database Connected');
     const database = client.db("ema_JohnDB");
     const productCollection = database.collection("products");
-    const orderCollection = database.collection("orders");
 
     //GET Products API
     app.get('/products', async(req, res) =>{
@@ -57,18 +56,9 @@ async function run() {
       // console.log(req.body);
       const keys = req.body;
       const query = {key: {$in: keys}}
-      const products = await productCollection.find(query).toArray();
+      const users = await productCollection.find(query).toArray();
       res.json(products);
       // res.send('hitting post');
-    })
-
-    //POST orders API
-    app.post('/orders', async(req, res) =>{
-      const order = req.body;
-      // console.log('order', order);
-      // res.send('order processed');
-      const result = await orderCollection.insertOne(order);
-      res.json(result);
     })
 
   } finally {

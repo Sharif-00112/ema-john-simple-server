@@ -4,7 +4,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 // var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3005;
 
 const app = express();
 
@@ -23,7 +23,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
   try {
     await client.connect();
-    // console.log('Database Connected');
+    console.log('Database Connected');
     const database = client.db("ema_JohnDB");
     const productCollection = database.collection("products");
 

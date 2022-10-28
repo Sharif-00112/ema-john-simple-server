@@ -4,7 +4,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 // var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3005;
 
 const app = express();
 
@@ -23,15 +23,32 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
   try {
     await client.connect();
-    // console.log('Database Connected');
+    console.log('Database Connected');
     const database = client.db("ema_JohnDB");
     const productCollection = database.collection("products");
 
     //GET Products API
     app.get('/products', async(req, res) =>{
+      // console.log(req.query);
       const cursor = productCollection.find({});
-      const products = await cursor.limit(10).toArray();
-      res.send(products);
+      // const products = await cursor.limit(10).toArray();
+
+      const page = req.query.page;
+      const size = parseInt(req.query.size);
+      const count = await cursor.count();
+
+      let products; 
+      if(page){
+        products = await cursor.skip(page * size).limit(size).toArray();
+      }
+      else{
+        products = await cursor.toArray();
+      }
+
+      res.send({
+        count,
+        products
+      });
     });
 
   } finally {

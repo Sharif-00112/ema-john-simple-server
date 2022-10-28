@@ -4,7 +4,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 // var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 3001;
 
 const app = express();
 
@@ -23,10 +23,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
   try {
     await client.connect();
-    console.log('Database Connected');
+    // console.log('Database Connected');
     const database = client.db("ema_JohnDB");
     const productCollection = database.collection("products");
-    const orderCollection = database.collection("orders");
 
     //GET Products API
     app.get('/products', async(req, res) =>{
@@ -60,15 +59,6 @@ async function run() {
       const products = await productCollection.find(query).toArray();
       res.json(products);
       // res.send('hitting post');
-    })
-
-    //POST orders API
-    app.post('/orders', async(req, res) =>{
-      const order = req.body;
-      // console.log('order', order);
-      // res.send('order processed');
-      const result = await orderCollection.insertOne(order);
-      res.json(result);
     })
 
   } finally {

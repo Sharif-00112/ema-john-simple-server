@@ -72,19 +72,6 @@ async function run() {
       res.json(result);
     })
 
-    //GET orders API
-    app.get('/orders', async(req, res) =>{
-      let query = {};
-      const email = req.query.email;
-      if(email){
-        query = {userData: email};
-      }
-
-      const cursor = orderCollection.find(query);
-      const orders = await cursor.toArray();
-      res.json(orders);
-    });
-
   } finally {
     // await client.close();
   }

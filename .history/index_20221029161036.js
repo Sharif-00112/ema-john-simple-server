@@ -77,7 +77,7 @@ async function run() {
       let query = {};
       const email = req.query.email;
       if(email){
-        query = {userData: email};
+        query = {email: email};
       }
 
       const cursor = orderCollection.find(query);

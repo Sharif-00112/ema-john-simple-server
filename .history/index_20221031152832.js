@@ -36,7 +36,6 @@ async function verifyToken(req, res, next) {
       const decodedUser = await admin.auth().verifyIdToken(idToken);
       // console.log(decodedUser);
       console.log('email:', decodedUser.email);
-      req.decodedUserEmail = decodedUser.email;
     }catch (error){
       console.log(error);
     }
@@ -100,16 +99,15 @@ async function run() {
     //GET orders API (with verification function)
     app.get('/orders', verifyToken, async(req, res) =>{
       // console.log(req.headers.authorization);
+      let query = {};
       const email = req.query.email;
-      if(req.decodedUserEmail === email) {
-        const query = {userData: email};
-        const cursor = orderCollection.find(query);
-        const orders = await cursor.toArray();
-        res.json(orders);
+      if(email){
+        query = {userData: email};
       }
-      else{
-        res.status(401).json({message: 'User not authorized!'})
-      }
+
+      const cursor = orderCollection.find(query);
+      const orders = await cursor.toArray();
+      res.json(orders);
     });
 
   } finally {

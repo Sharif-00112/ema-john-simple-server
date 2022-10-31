@@ -6,14 +6,6 @@ const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config();
 const port = process.env.PORT || 3005;
 
-//firebase admin initialization 
-var admin = require("firebase-admin");
-var serviceAccount = require('./react-firebase-integrati-7bab8-firebase-adminsdk-7owjd-24dacbc2fe.json');
-// const { initializeApp } = require('firebase-admin/app');
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
 const app = express();
 
 //middleware
@@ -27,19 +19,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 // console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-//Verify Firebase token using external function 
 async function verifyToken(req, res, next) {
   if(req.headers?.authorization?.startsWith('Bearer ')){
     const idToken = req.headers.authorization.split('Bearer ')[1];
-    // console.log('Inside separate function:', idToken);
-    try{
-      const decodedUser = await admin.auth().verifyIdToken(idToken);
-      // console.log(decodedUser);
-      console.log('email:', decodedUser.email);
-      req.decodedUserEmail = decodedUser.email;
-    }catch (error){
-      console.log(error);
-    }
   }
   next();
 }
@@ -49,6 +31,8 @@ async function run() {
   try {
     await client.connect();
     console.log('Database Connected');
+    console.log(idToken);
+
     const database = client.db("ema_JohnDB");
     const productCollection = database.collection("products");
     const orderCollection = database.collection("orders");
@@ -97,19 +81,18 @@ async function run() {
       res.json(result);
     })
 
-    //GET orders API (with verification function)
-    app.get('/orders', verifyToken, async(req, res) =>{
+    //GET orders API
+    app.get('/orders', async(req, res) =>{
       // console.log(req.headers.authorization);
+      let query = {};
       const email = req.query.email;
-      if(req.decodedUserEmail === email) {
-        const query = {userData: email};
-        const cursor = orderCollection.find(query);
-        const orders = await cursor.toArray();
-        res.json(orders);
+      if(email){
+        query = {userData: email};
       }
-      else{
-        res.status(401).json({message: 'User not authorized!'})
-      }
+
+      const cursor = orderCollection.find(query);
+      const orders = await cursor.toArray();
+      res.json(orders);
     });
 
   } finally {
